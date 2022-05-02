@@ -158,19 +158,19 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="9509Model.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>9509Model.Context.cs</LastGenOutput>
       <DependentUpon>9509Model.edmx</DependentUpon>
+      <LastGenOutput>9509Model.Context.cs</LastGenOutput>
     </Content>
     <Content Include="9509Model.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>9509Model.edmx</DependentUpon>
       <LastGenOutput>9509Model.cs</LastGenOutput>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
