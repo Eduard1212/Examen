@@ -24,7 +24,7 @@ namespace Examen
         {
             clientsGrid.Rows.Clear();
             try
-            {
+            {    
                 clientsGrid.AutoGenerateColumns = false;
                 clientsGrid.ColumnCount = 0;
                 clientsGrid.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "ID", HeaderText="Идентификатор"});
@@ -37,26 +37,75 @@ namespace Examen
                 clientsGrid.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "RegistrationDate", HeaderText = "Дата регистрации" });
                 clientsGrid.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Tag", HeaderText = "Тэги" });
                 clientsGrid.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "PhotoPath", HeaderText = "Тэги", Visible=false });
-                GetDataSource();
+                GetDataSource("Load", "");
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error");
             }
             this.count.Text = String.Format("{0}  из {1}", start + 1, (int)end);
+
+            textBox1_MouseLeave(textBox1, null);
+            textBox2_MouseLeave(textBox2, null);
+            textBox3_MouseLeave(textBox3, null);
         }
-        private void GetDataSource()
+        private void GetDataSource(string mode, string value)
         {
-            try
+            
+            switch (mode)
             {
-                clientsGrid.DataSource = Clients.GetClients().Client.OrderBy(Client => Client.ID).Skip(start * 10).Take(10).ToList();
-                clientsGrid.ClearSelection();
-                end = Math.Ceiling((double)Clients.GetClients().Client.Count() / 10.00);
+                case "Load":
+                    try
+                    {
+                        clientsGrid.DataSource = Clients.GetClients().Client.OrderBy(Client => Client.ID).Skip(start * 10).Take(10).ToList();
+                        clientsGrid.ClearSelection();
+                        end = Math.Ceiling((double)Clients.GetClients().Client.Count() / 10.00);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error");
+                    }
+                    break;
+                case "Name":
+                    try
+                    {
+                        clientsGrid.DataSource = Clients.GetClients().Client.Where(Client => Client.LastName.Contains(value)).ToList();
+                        clientsGrid.ClearSelection();
+                        end = Math.Ceiling((double)Clients.GetClients().Client.Count() / 10.00);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error");
+                    }
+                    break;
+                case "SName":
+                    try
+                    {
+                        clientsGrid.DataSource = Clients.GetClients().Client.Where(Client => Client.FirstName.Contains(value)).ToList();
+                        clientsGrid.ClearSelection();
+                        end = Math.Ceiling((double)Clients.GetClients().Client.Count() / 10.00);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error");
+                    }
+                    break;
+                case "Patro":
+                    try
+                    {
+                        clientsGrid.DataSource = Clients.GetClients().Client.Where(Client => Client.Patronymic.Contains(value)).ToList();
+                        clientsGrid.ClearSelection();
+                        end = Math.Ceiling((double)Clients.GetClients().Client.Count() / 10.00);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show(ex.Message, "Error");
+                    }
+                    break;
+                default:
+                    break;
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error");
-            }
+            
         }
         private void editBtn_Click(object sender, EventArgs e)
         {
@@ -66,7 +115,7 @@ namespace Examen
                 Client client = Clients.GetClients().Client.Where(c => c.ID == _ID).FirstOrDefault() as Client;
                 ClientsAddEdit form = new ClientsAddEdit(client);
                 form.Show();
-                GetDataSource();
+                GetDataSource("Load", "");
             }
             else MessageBox.Show("Для редактирования необходимо выделить запись, кликнув по необходимой строке.","Внимание!!!",MessageBoxButtons.OK);
         }
@@ -76,7 +125,7 @@ namespace Examen
             if (start >= 1)
                 start--;
             this.count.Text = String.Format("{0}  из {1}", start + 1, (int)end);
-            GetDataSource();
+            GetDataSource("Load", "");
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -84,7 +133,7 @@ namespace Examen
             if (start < end - 1)
                 start++;
             this.count.Text = String.Format("{0}  из {1}", start + 1, (int)end);
-            GetDataSource();
+            GetDataSource("Load", "");
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -111,7 +160,79 @@ namespace Examen
                 }
             }
             else MessageBox.Show("Для удаления необходимо выделить запись, кликнув по необходимой строке.", "Внимание!!!", MessageBoxButtons.OK);
-            GetDataSource();
+            GetDataSource("Load", "");
+        }
+
+        private void textBox1_MouseLeave(object sender, EventArgs e)
+        {
+            if (textBox1.Text == "")
+            {
+                textBox1.Text = "Фамилия";
+                textBox1.ForeColor = Color.Gray;
+            }
+        }
+
+        private void textBox1_MouseEnter(object sender, EventArgs e)
+        {
+            if (textBox1.Text == "" || textBox1.Text == "Фамилия")
+            {
+                textBox1.ForeColor = Color.Empty;
+                textBox1.Clear();
+            }
+        }
+
+        private void textBox2_MouseLeave(object sender, EventArgs e)
+        {
+            if (textBox2.Text == "")
+            {
+                textBox2.Text = "Имя";
+                textBox2.ForeColor = Color.Gray;
+            }
+        }
+
+        private void textBox2_MouseEnter(object sender, EventArgs e)
+        {
+            if (textBox2.Text == "" || textBox2.Text == "Имя")
+            {
+                textBox2.ForeColor = Color.Empty;
+                textBox2.Clear();
+            }
+        }
+
+        private void textBox3_MouseLeave(object sender, EventArgs e)
+        {
+            if (textBox3.Text == "")
+            {
+                textBox3.Text = "Отчество";
+                textBox3.ForeColor = Color.Gray;
+            }
+        }
+
+        private void textBox3_MouseEnter(object sender, EventArgs e)
+        {
+            if (textBox3.Text == "" || textBox3.Text == "Отчество")
+            {
+                textBox3.ForeColor = Color.Empty;
+                textBox3.Clear();
+            }
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+            if(textBox1.Text != "Фамилия" && textBox1.Text != "")
+                GetDataSource("SName", textBox1.Text);
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            if (textBox2.Text != "Имя" && textBox2.Text != "")
+                GetDataSource("Name", textBox2.Text);
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+            if (textBox3.Text != "Отчество" && textBox3.Text != "")
+                GetDataSource("Patro", textBox3.Text);
         }
     }
 }
