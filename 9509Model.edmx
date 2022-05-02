@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="Хранилище EntityModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="Хранилище Model" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="AttachedProduct">
           <Key>
             <PropertyRef Name="MainProductID" />
@@ -22,10 +22,10 @@
           <Property Name="LastName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="Patronymic" Type="nvarchar" MaxLength="50" />
           <Property Name="Birthday" Type="date" />
-          <Property Name="RegistrationDate" Type="datetime" Nullable="false" />
+          <Property Name="RegistrationDate" Type="datetime" />
           <Property Name="Email" Type="text" />
           <Property Name="Phone" Type="text" Nullable="false" />
-          <Property Name="GenderCode" Type="nchar" MaxLength="1" Nullable="false" />
+          <Property Name="GenderCode" Type="nchar" MaxLength="1" />
           <Property Name="PhotoPath" Type="text" />
         </EntityType>
         <EntityType Name="ClientService">
@@ -162,7 +162,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Client_Gender">
-          <End Role="Gender" Type="Self.Gender" Multiplicity="1" />
+          <End Role="Gender" Type="Self.Gender" Multiplicity="0..1" />
           <End Role="Client" Type="Self.Client" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Gender">
@@ -293,7 +293,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <EntityContainer Name="Хранилище EntityModelContainer">
+        <EntityContainer Name="Хранилище ModelContainer">
           <EntitySet Name="AttachedProduct" EntityType="Self.AttachedProduct" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Client" EntityType="Self.Client" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="ClientService" EntityType="Self.ClientService" Schema="dbo" store:Type="Tables" />
@@ -365,7 +365,7 @@
     </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="EntityModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <Schema Namespace="Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityType Name="Client">
           <Key>
             <PropertyRef Name="ID" />
@@ -375,10 +375,10 @@
           <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="Patronymic" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Birthday" Type="DateTime" Precision="0" />
-          <Property Name="RegistrationDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="RegistrationDate" Type="DateTime" Precision="3" />
           <Property Name="Email" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <Property Name="Phone" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
-          <Property Name="GenderCode" Type="String" MaxLength="1" FixedLength="true" Unicode="true" Nullable="false" />
+          <Property Name="GenderCode" Type="String" MaxLength="1" FixedLength="true" Unicode="true" />
           <Property Name="PhotoPath" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="Gender" Relationship="Self.FK_Client_Gender" FromRole="Client" ToRole="Gender" />
           <NavigationProperty Name="ClientService" Relationship="Self.FK_ClientService_Client" FromRole="Client" ToRole="ClientService" />
@@ -505,7 +505,7 @@
           <NavigationProperty Name="Client" Relationship="Self.TagOfClient" FromRole="Tag" ToRole="Client" />
         </EntityType>
         <Association Name="FK_Client_Gender">
-          <End Role="Gender" Type="Self.Gender" Multiplicity="1" />
+          <End Role="Gender" Type="Self.Gender" Multiplicity="0..1" />
           <End Role="Client" Type="Self.Client" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Gender">
@@ -683,9 +683,9 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="Хранилище EntityModelContainer" CdmEntityContainer="Entities">
+        <EntityContainerMapping StorageEntityContainer="Хранилище ModelContainer" CdmEntityContainer="Entities">
           <EntitySetMapping Name="Client">
-            <EntityTypeMapping TypeName="EntityModel.Client">
+            <EntityTypeMapping TypeName="Model.Client">
               <MappingFragment StoreEntitySet="Client">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
@@ -701,7 +701,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ClientService">
-            <EntityTypeMapping TypeName="EntityModel.ClientService">
+            <EntityTypeMapping TypeName="Model.ClientService">
               <MappingFragment StoreEntitySet="ClientService">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="ClientID" ColumnName="ClientID" />
@@ -712,7 +712,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="DocumentByService">
-            <EntityTypeMapping TypeName="EntityModel.DocumentByService">
+            <EntityTypeMapping TypeName="Model.DocumentByService">
               <MappingFragment StoreEntitySet="DocumentByService">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="ClientServiceID" ColumnName="ClientServiceID" />
@@ -721,7 +721,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Gender">
-            <EntityTypeMapping TypeName="EntityModel.Gender">
+            <EntityTypeMapping TypeName="Model.Gender">
               <MappingFragment StoreEntitySet="Gender">
                 <ScalarProperty Name="Code" ColumnName="Code" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
@@ -729,7 +729,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Manufacturer">
-            <EntityTypeMapping TypeName="EntityModel.Manufacturer">
+            <EntityTypeMapping TypeName="Model.Manufacturer">
               <MappingFragment StoreEntitySet="Manufacturer">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Name" ColumnName="Name" />
@@ -738,7 +738,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Product">
-            <EntityTypeMapping TypeName="EntityModel.Product">
+            <EntityTypeMapping TypeName="Model.Product">
               <MappingFragment StoreEntitySet="Product">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
@@ -751,7 +751,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ProductPhoto">
-            <EntityTypeMapping TypeName="EntityModel.ProductPhoto">
+            <EntityTypeMapping TypeName="Model.ProductPhoto">
               <MappingFragment StoreEntitySet="ProductPhoto">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="ProductID" ColumnName="ProductID" />
@@ -760,7 +760,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ProductSale">
-            <EntityTypeMapping TypeName="EntityModel.ProductSale">
+            <EntityTypeMapping TypeName="Model.ProductSale">
               <MappingFragment StoreEntitySet="ProductSale">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="SaleDate" ColumnName="SaleDate" />
@@ -771,7 +771,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Service">
-            <EntityTypeMapping TypeName="EntityModel.Service">
+            <EntityTypeMapping TypeName="Model.Service">
               <MappingFragment StoreEntitySet="Service">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
@@ -784,7 +784,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="ServicePhoto">
-            <EntityTypeMapping TypeName="EntityModel.ServicePhoto">
+            <EntityTypeMapping TypeName="Model.ServicePhoto">
               <MappingFragment StoreEntitySet="ServicePhoto">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="ServiceID" ColumnName="ServiceID" />
@@ -793,7 +793,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="sysdiagrams">
-            <EntityTypeMapping TypeName="EntityModel.sysdiagrams">
+            <EntityTypeMapping TypeName="Model.sysdiagrams">
               <MappingFragment StoreEntitySet="sysdiagrams">
                 <ScalarProperty Name="name" ColumnName="name" />
                 <ScalarProperty Name="principal_id" ColumnName="principal_id" />
@@ -804,7 +804,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Tag">
-            <EntityTypeMapping TypeName="EntityModel.Tag">
+            <EntityTypeMapping TypeName="Model.Tag">
               <MappingFragment StoreEntitySet="Tag">
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
@@ -812,7 +812,7 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <AssociationSetMapping Name="AttachedProduct" TypeName="EntityModel.AttachedProduct" StoreEntitySet="AttachedProduct">
+          <AssociationSetMapping Name="AttachedProduct" TypeName="Model.AttachedProduct" StoreEntitySet="AttachedProduct">
             <EndProperty Name="Product">
               <ScalarProperty Name="ID" ColumnName="MainProductID" />
             </EndProperty>
@@ -820,7 +820,7 @@
               <ScalarProperty Name="ID" ColumnName="AttachedProductID" />
             </EndProperty>
           </AssociationSetMapping>
-          <AssociationSetMapping Name="TagOfClient" TypeName="EntityModel.TagOfClient" StoreEntitySet="TagOfClient">
+          <AssociationSetMapping Name="TagOfClient" TypeName="Model.TagOfClient" StoreEntitySet="TagOfClient">
             <EndProperty Name="Client">
               <ScalarProperty Name="ID" ColumnName="ClientID" />
             </EndProperty>

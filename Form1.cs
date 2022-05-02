@@ -50,6 +50,7 @@ namespace Examen
             try
             {
                 clientsGrid.DataSource = Clients.GetClients().Client.OrderBy(Client => Client.ID).Skip(start * 10).Take(10).ToList();
+                clientsGrid.ClearSelection();
                 end = Math.Ceiling((double)Clients.GetClients().Client.Count() / 10.00);
             }
             catch (Exception ex)
@@ -59,11 +60,15 @@ namespace Examen
         }
         private void editBtn_Click(object sender, EventArgs e)
         {
-            _ID = Convert.ToInt32(this.clientsGrid.SelectedRows[0].Cells[0].Value);
-            Client client = Clients.GetClients().Client.Where(c=>c.ID == _ID).FirstOrDefault() as Client;
-            ClientsAddEdit form = new ClientsAddEdit(client);
-            form.Show();
-            GetDataSource();
+            if (this.clientsGrid.SelectedRows.Count != 0)
+            {
+                _ID = Convert.ToInt32(this.clientsGrid.SelectedRows[0].Cells[0].Value);
+                Client client = Clients.GetClients().Client.Where(c => c.ID == _ID).FirstOrDefault() as Client;
+                ClientsAddEdit form = new ClientsAddEdit(client);
+                form.Show();
+                GetDataSource();
+            }
+            else MessageBox.Show("Для редактирования необходимо выделить запись, кликнув по необходимой строке.","Внимание!!!",MessageBoxButtons.OK);
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -79,6 +84,33 @@ namespace Examen
             if (start < end - 1)
                 start++;
             this.count.Text = String.Format("{0}  из {1}", start + 1, (int)end);
+            GetDataSource();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            ClientsAddEdit form = new ClientsAddEdit(null);
+            form.Show();
+        }
+
+        private void deleteBtn_Click(object sender, EventArgs e)
+        {
+            if (this.clientsGrid.SelectedRows.Count != 0)
+            {
+                DialogResult result = MessageBox.Show("Вы уверены, что хотите удалить данного клиента из базы данных?\nВосстановление будет невозможно!", "Внимание!!!", MessageBoxButtons.OKCancel);
+                if (result == DialogResult.OK)
+                {
+                    _ID = Convert.ToInt32(this.clientsGrid.SelectedRows[0].Cells[0].Value);
+                    try
+                    {
+                        Clients.GetClients().Client.Remove(Clients.GetClients().Client.Where(c => c.ID == _ID).FirstOrDefault() as Client);
+                        Clients.GetClients().SaveChanges();
+                    }
+                    catch (Exception ex)
+                    { MessageBox.Show(ex.Message); }
+                }
+            }
+            else MessageBox.Show("Для удаления необходимо выделить запись, кликнув по необходимой строке.", "Внимание!!!", MessageBoxButtons.OK);
             GetDataSource();
         }
     }

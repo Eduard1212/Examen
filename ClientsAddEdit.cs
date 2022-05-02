@@ -14,46 +14,34 @@ namespace Examen
     public partial class ClientsAddEdit : Form
     {
         #region Переменные формы
-        private int _id;
-        private string _surname;
-        private string _name;
-        private string _patro;
-        private DateTime _birth;
-        private string _mail;
-        private string _phone;
-        private string _photo;
         Client _client = null;
         #endregion
 
         public ClientsAddEdit(Client client)
         {
             InitializeComponent();
-            this._id = client.ID;
-            this._surname = client.FirstName;
-            this._name = client.LastName;
-            this._patro = client.Patronymic;
-            this._birth = Convert.ToDateTime(client.Birthday);
-            this._mail = client.Email;
-            this._phone = client.Phone;
-            this._photo = client.PhotoPath;
-            _client = client;
+            if (client != null)
+            {
+                _client = client;
+            }
+            else _client = new Client();
         }       // инициализатор класса
 
         private void ClientsAddEdit_Load(object sender, EventArgs e)
         {
             #region Загрузка полей формы
-            this.phone.Text = _phone;
-            this.email.Text = _mail;
-            this.photo.Text = _photo;
-            this.id.Text = _id.ToString();
-            this.surname.Text = _surname;
-            this.name.Text = _name;
-            this.patro.Text = _patro;
-            this.calendar.SetDate(_birth);
+            this.phone.Text = _client.Phone;
+            this.email.Text = _client.Email;
+            this.photo.Text = _client.PhotoPath;
+            this.id.Text = _client.ID.ToString();
+            this.surname.Text = _client.FirstName;
+            this.name.Text = _client.LastName;
+            this.patro.Text = _client.Patronymic;
+            this.calendar.SetDate(Convert.ToDateTime(_client.Birthday));
 
-            if (File.Exists(_photo))
+            if (File.Exists(_client.PhotoPath))
             {
-                pictureBox1.Image = Image.FromFile(this._photo);
+                pictureBox1.Image = Image.FromFile(_client.PhotoPath);
                 pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             }
             #endregion
@@ -63,14 +51,19 @@ namespace Examen
         {
             try
             {
-                //_client.ID = Convert.ToInt32(id.Text);  -- закомментировал потому, что БД не дает менять ID из вне
+                //_client.ID = Convert.ToInt32(id.Text);  //-- закомментировал потому, что БД не дает менять ID из вне
                 _client.FirstName = surname.Text;
                 _client.LastName = name.Text;
-                _client.PhotoPath = _photo;
+                _client.PhotoPath = photo.Text;
                 _client.Patronymic = patro.Text;
                 _client.Email = email.Text;
                 _client.Phone = phone.Text;
-                _client.Birthday = calendar.SelectionStart;
+                _client.Birthday = (DateTime?)calendar.SelectionStart;
+                if (id.Text == "0")
+                {
+                    _client.RegistrationDate = DateTime.Now;
+                    Clients.GetClients().Client.Add(_client);
+                }
                 Clients.GetClients().SaveChanges();
             }
             catch(Exception ex)
@@ -94,8 +87,8 @@ namespace Examen
                 file.RestoreDirectory = true;
                 if (file.ShowDialog() == DialogResult.OK)
                 {
-                    this.photo.Text = this._photo = file.FileName;
-                    pictureBox1.Image = Image.FromFile(this._photo);
+                    this.photo.Text = file.FileName;
+                    pictureBox1.Image = Image.FromFile(this.photo.Text);
                     pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
                 }
             }
