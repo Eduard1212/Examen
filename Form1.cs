@@ -48,6 +48,14 @@ namespace Examen
             textBox1_MouseLeave(textBox1, null);
             textBox2_MouseLeave(textBox2, null);
             textBox3_MouseLeave(textBox3, null);
+            comboBox1.Items.Clear();
+            comboBox1.Items.Insert(0, "");
+            comboBox1.Items.Insert(1, "А - Я(Фамилия)");
+            comboBox1.Items.Insert(2, "Я - А(Фамилия)");
+            comboBox1.Items.Insert(3, "По дате регистрации");
+            comboBox1.Items.Insert(4, "По дате рождения");
+            comboBox1.SelectedIndex = 0;
+            
         }
         private void GetDataSource(string mode, string value)
         {
@@ -100,6 +108,61 @@ namespace Examen
                     catch (Exception ex)
                     {
                         MessageBox.Show(ex.Message, "Error");
+                    }
+                    break;
+                case "Sort":
+                    switch (value)
+                    {
+                        case "A-Z":
+                            try
+                            {
+                                clientsGrid.DataSource = Clients.GetClients().Client.OrderBy(Client => Client.FirstName).Skip(start * 10).Take(10).ToList();
+                                clientsGrid.ClearSelection();
+                                end = Math.Ceiling((double)Clients.GetClients().Client.Count() / 10.00);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message, "Error");
+                            }
+                            break;
+                        case "Z-A":
+                            try
+                            {
+                                clientsGrid.DataSource = Clients.GetClients().Client.OrderByDescending(Client => Client.FirstName).Skip(start * 10).Take(10).ToList();
+                                clientsGrid.ClearSelection();
+                                end = Math.Ceiling((double)Clients.GetClients().Client.Count() / 10.00);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message, "Error");
+                            }
+                            break;
+                        case "Reg":
+                            try
+                            {
+                                clientsGrid.DataSource = Clients.GetClients().Client.OrderBy(Client => Client.RegistrationDate).Skip(start * 10).Take(10).ToList();
+                                clientsGrid.ClearSelection();
+                                end = Math.Ceiling((double)Clients.GetClients().Client.Count() / 10.00);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message, "Error");
+                            }
+                            break;
+                        case "Birth":
+                            try
+                            {
+                                clientsGrid.DataSource = Clients.GetClients().Client.OrderBy(Client => Client.Birthday).Skip(start * 10).Take(10).ToList();
+                                clientsGrid.ClearSelection();
+                                end = Math.Ceiling((double)Clients.GetClients().Client.Count() / 10.00);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message, "Error");
+                            }
+                            break;
+                        default:
+                            break;
                     }
                     break;
                 default:
@@ -233,6 +296,31 @@ namespace Examen
         {
             if (textBox3.Text != "Отчество" && textBox3.Text != "")
                 GetDataSource("Patro", textBox3.Text);
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ComboBox box = (ComboBox)sender;
+            switch (box.SelectedIndex)
+            {
+                case 0:
+                    GetDataSource("Load","");
+                    break;
+                case 1:
+                    GetDataSource("Sort","A-Z");
+                    break;
+                case 2:
+                    GetDataSource("Sort", "Z-A");
+                    break;
+                case 3:
+                    GetDataSource("Sort", "Reg");
+                    break;
+                case 4:
+                    GetDataSource("Sort", "Birth");
+                    break;
+                default:
+                    break;
+            }
         }
     }
 }
