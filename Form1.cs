@@ -7,19 +7,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+/// <summary>
+/// Дизайн вообще нужно делать в стиле который указан в задании
+/// Если же там ничего не указано то делай как тебе захочется
+/// 
+/// К тому же, не обязательно создавать для редактирования и создания новую форму как я,
+/// можно просто добавить поля прям на эту форму и выводить инфу в них, при клике по таблице
+/// 
+/// Да и с тем чтобы в полях имя, фамилия, отчество высвечивалась подсказка лучше не парься, я сделал просто чтобы показать что это возможно
+/// 
+/// </summary>
 namespace Examen
 {
     public partial class Form1 : Form
     {
-        private int start = 0;
-        private double end;
-        public int _ID;
+        //переменные формы
+        private int start = 0; // поле показывающее какая страничка в табличке сейчас активна, тобишь если мы на 3 странице, тогда переменная равна 3
+        private double end; // переменная показывает сколько всего страниц у нас получилось вывести в таблицу
+        public int _ID; // код клиента, нужен для того чтобы найти того самого клиента и передать его на форму редактирования
         public Form1()
         {
             InitializeComponent();
         }
 
+        // загрузка формы
         private void Form1_Load(object sender, EventArgs e)
         {
             clientsGrid.Rows.Clear();
@@ -57,12 +68,15 @@ namespace Examen
             comboBox1.SelectedIndex = 0;
             
         }
+        //получение данных из БД
         private void GetDataSource(string mode, string value)
         {
-            
+            // здесь мы делаем сортировку входящих данных, т.е. "mode" и "value"
+            // mode в моем случае нужен для того чтобы определить что мы делаем, просто выводим данные или сортируем/фильтруем таблицу
+            // Value же нужен для того чтобы понимать как сортировать таблицу, зависит value от того что ты выберешь в комбобоксе
             switch (mode)
             {
-                case "Load":
+                case "Load": // обычная загрузка без сортировки
                     try
                     {
                         clientsGrid.DataSource = Clients.GetClients().Client.OrderBy(Client => Client.ID).Skip(start * 10).Take(10).ToList();
@@ -74,7 +88,7 @@ namespace Examen
                         MessageBox.Show(ex.Message, "Error");
                     }
                     break;
-                case "Name":
+                case "Name": // также загрузка но только тех людей у кого имя содержит те буквы что ты пишешь в соответствующее поле 
                     try
                     {
                         clientsGrid.DataSource = Clients.GetClients().Client.Where(Client => Client.LastName.Contains(value)).ToList();
@@ -86,7 +100,7 @@ namespace Examen
                         MessageBox.Show(ex.Message, "Error");
                     }
                     break;
-                case "SName":
+                case "SName": // тоже что выше только с фамилией
                     try
                     {
                         clientsGrid.DataSource = Clients.GetClients().Client.Where(Client => Client.FirstName.Contains(value)).ToList();
@@ -98,7 +112,7 @@ namespace Examen
                         MessageBox.Show(ex.Message, "Error");
                     }
                     break;
-                case "Patro":
+                case "Patro": // тоже самое, только с отчеством
                     try
                     {
                         clientsGrid.DataSource = Clients.GetClients().Client.Where(Client => Client.Patronymic.Contains(value)).ToList();
@@ -110,10 +124,13 @@ namespace Examen
                         MessageBox.Show(ex.Message, "Error");
                     }
                     break;
-                case "Sort":
+                case "Sort": 
+                    // здесь уже сортировка идет, зависящая от комбобокса, так как в комбобоксе несколько значений
+                    // то и вариантов сортировки тоже несколько, изза чего мы и разбиваем данный пункт
+                    // на несколько подпунктов
                     switch (value)
                     {
-                        case "A-Z":
+                        case "A-Z": // первый пункт По алфвиту
                             try
                             {
                                 clientsGrid.DataSource = Clients.GetClients().Client.OrderBy(Client => Client.FirstName).Skip(start * 10).Take(10).ToList();
@@ -125,7 +142,7 @@ namespace Examen
                                 MessageBox.Show(ex.Message, "Error");
                             }
                             break;
-                        case "Z-A":
+                        case "Z-A": // второй пункт, против алфавита, или в обратном порядке алфавита, тут как удобнее
                             try
                             {
                                 clientsGrid.DataSource = Clients.GetClients().Client.OrderByDescending(Client => Client.FirstName).Skip(start * 10).Take(10).ToList();
@@ -137,7 +154,7 @@ namespace Examen
                                 MessageBox.Show(ex.Message, "Error");
                             }
                             break;
-                        case "Reg":
+                        case "Reg": // сортировка по дате регистрации, по возрастанию
                             try
                             {
                                 clientsGrid.DataSource = Clients.GetClients().Client.OrderBy(Client => Client.RegistrationDate).Skip(start * 10).Take(10).ToList();
@@ -149,7 +166,7 @@ namespace Examen
                                 MessageBox.Show(ex.Message, "Error");
                             }
                             break;
-                        case "Birth":
+                        case "Birth": // сортировка по дате рождения, по возрастанию
                             try
                             {
                                 clientsGrid.DataSource = Clients.GetClients().Client.OrderBy(Client => Client.Birthday).Skip(start * 10).Take(10).ToList();
@@ -161,7 +178,7 @@ namespace Examen
                                 MessageBox.Show(ex.Message, "Error");
                             }
                             break;
-                        default:
+                        default: // значение дефолт, происходит если пихнешь что то не то, просто ничего не произойдет и не сломается
                             break;
                     }
                     break;
@@ -170,6 +187,8 @@ namespace Examen
             }
             
         }
+        
+        //обработка кнопки редактировать
         private void editBtn_Click(object sender, EventArgs e)
         {
             if (this.clientsGrid.SelectedRows.Count != 0)
@@ -182,29 +201,7 @@ namespace Examen
             }
             else MessageBox.Show("Для редактирования необходимо выделить запись, кликнув по необходимой строке.","Внимание!!!",MessageBoxButtons.OK);
         }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            if (start >= 1)
-                start--;
-            this.count.Text = String.Format("{0}  из {1}", start + 1, (int)end);
-            GetDataSource("Load", "");
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            if (start < end - 1)
-                start++;
-            this.count.Text = String.Format("{0}  из {1}", start + 1, (int)end);
-            GetDataSource("Load", "");
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            ClientsAddEdit form = new ClientsAddEdit(null);
-            form.Show();
-        }
-
+        //обработка кнопки удалить
         private void deleteBtn_Click(object sender, EventArgs e)
         {
             if (this.clientsGrid.SelectedRows.Count != 0)
@@ -226,6 +223,36 @@ namespace Examen
             GetDataSource("Load", "");
         }
 
+        // обработка кнокпки <
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (start >= 1)
+                start--;
+            this.count.Text = String.Format("{0}  из {1}", start + 1, (int)end);
+            GetDataSource("Load", "");
+        }
+        // обработка кнокпки >
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (start < end - 1)
+                start++;
+            this.count.Text = String.Format("{0}  из {1}", start + 1, (int)end);
+            GetDataSource("Load", "");
+        }
+        // обработка кнокпки Добавить клиента
+        private void button3_Click(object sender, EventArgs e)
+        {
+            ClientsAddEdit form = new ClientsAddEdit(null);
+            form.Show();
+        }
+
+       
+        /// <summary>
+        /// Все что дальше написано нужно для того чтобы обработать фильтрацию в реальном времени
+        /// То есть ты меняешь текст и таблица СРАЗУ ЖЕ сортируется
+        /// </summary>
+
+        //обработка события происходящего когда мышка ВЫХОДИТ за рамки поля Фамилия
         private void textBox1_MouseLeave(object sender, EventArgs e)
         {
             if (textBox1.Text == "")
@@ -234,7 +261,7 @@ namespace Examen
                 textBox1.ForeColor = Color.Gray;
             }
         }
-
+        //обработка события происходящего когда мышка ВХОДИТ в зону поля Фамилия
         private void textBox1_MouseEnter(object sender, EventArgs e)
         {
             if (textBox1.Text == "" || textBox1.Text == "Фамилия")
@@ -244,6 +271,7 @@ namespace Examen
             }
         }
 
+        //обработка события происходящего когда мышка ВЫХОДИТ за рамки поля Имя
         private void textBox2_MouseLeave(object sender, EventArgs e)
         {
             if (textBox2.Text == "")
@@ -252,7 +280,7 @@ namespace Examen
                 textBox2.ForeColor = Color.Gray;
             }
         }
-
+        //обработка события происходящего когда мышка ВХОДИТ в зону поля Имя
         private void textBox2_MouseEnter(object sender, EventArgs e)
         {
             if (textBox2.Text == "" || textBox2.Text == "Имя")
@@ -262,6 +290,7 @@ namespace Examen
             }
         }
 
+        //обработка события происходящего когда мышка ВЫХОДИТ за рамки поля Отчество
         private void textBox3_MouseLeave(object sender, EventArgs e)
         {
             if (textBox3.Text == "")
@@ -270,7 +299,7 @@ namespace Examen
                 textBox3.ForeColor = Color.Gray;
             }
         }
-
+        //обработка события происходящего когда мышка ВХОДИТ в зону поля Имя, то есть когда наводишь на текстбокс
         private void textBox3_MouseEnter(object sender, EventArgs e)
         {
             if (textBox3.Text == "" || textBox3.Text == "Отчество")
@@ -280,24 +309,29 @@ namespace Examen
             }
         }
 
+        // событие происходящее когда ты меняешь фамилию
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
             if(textBox1.Text != "Фамилия" && textBox1.Text != "")
                 GetDataSource("SName", textBox1.Text);
         }
-
+        // событие происходящее когда ты меняешь имя
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
             if (textBox2.Text != "Имя" && textBox2.Text != "")
                 GetDataSource("Name", textBox2.Text);
         }
-
+        // событие происходящее когда ты меняешь отчество
         private void textBox3_TextChanged(object sender, EventArgs e)
         {
             if (textBox3.Text != "Отчество" && textBox3.Text != "")
                 GetDataSource("Patro", textBox3.Text);
         }
 
+        /// <summary>
+        /// Данный код нужен для обработки значение в комбобоксе
+        /// меняешь значение - табличка сортируется 
+        /// </summary>
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             ComboBox box = (ComboBox)sender;
